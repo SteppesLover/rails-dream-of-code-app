@@ -1,0 +1,123 @@
+(1..5).each_with_index do |coding_class_id, index|
+  Course.create(
+    id: 36 + index,
+    coding_class_id: coding_class_id,
+    trimester_id: 8,
+    max_enrollment: 25
+  )
+end
+
+Student.create({ "first_name": "Alex", "last_name": "Borger", "email": "alex.borger@test.com" })
+MentorEnrollmentAssignment.all.each do |assignment|
+puts assignment.mentor.id
+puts assignment.enrollment.id
+end
+//Mentor_id=31 
+
+Student.last
+//Student_id = 51
+
+coding_class = CodingClass.find_by(title: 'Intro to Programming')
+trimester = Trimester.find_by(year: 2026, term: 'Spring')  # Year should likely be an integer
+course_ids = Course.where(coding_class: coding_class, trimester: trimester).pluck(:id)
+//Course_id=36
+
+Enrollment.create({ "course_id":'36', "student_id": '51', "final_grade": 'nill'  })
+Enrollment.last
+//Enrollment_id=91
+MentorEnrollmentAssignment.create({"mentor_id": '31', "enrollment_id": '91'})
+
+Question 3:
+
+My app consists of three modules:
+
+A text messenger for collecting time data
+A statistics module for displaying data
+A reporting feature for tracking long-term trends
+Currently, I use four different apps for time management:
+
+Telegram Messenger – for recording and editing time spent in real time
+An Android app (available here, now deleted from the Play Store) – for storing data and making info graphics
+Google Spreadsheets – for generating reports
+Simple Tracker (iOS app) – for displaying daily progress
+I think it would be more convenient to have all these functions in one place.
+
+Who will use this app?
+
+I'm primarily building it for myself to fit my personal time management style. There are no different user roles in the app.
+
+Features of my app:
+
+Users can log time using special statements like "0:00 – slept – 8:00", which will automatically be added to the database.
+Users can view statistics on how they spend their time over a selected period.
+Users can create time management plans for specific periods.
+Users can track the execution of their plans.
+Users can tag time entries with labels like "chores", "programming", etc.
+Users can generate reports on time usage for a chosen time period.
+Question 4:
+Tables & Attributes
+We will have 6 tables: Users, TimeEntries, Report, TimeEntryReport, TimePlans, TimeEntryPlan, TimePlansReport
+
+We will have 7 tables:
+Users, TimeEntries, Reports, TimeEntryReports, TimePlans, TimeEntryPlans, TimePlansReports
+
+1. Users
+
+id (primary key)
+name (string)
+email (string)
+created_at (datetime)
+updated_at (datetime)
+2. TimeEntries (tracks time spent on activities)
+
+id (primary key)
+user_id (foreign key) (references users)
+activity_name (string)
+duration_minutes (integer)
+activity_date (date)
+created_at (datetime)
+updated_at (datetime)
+3. Reports
+
+id (primary key)
+name (string)
+time_period (datetime)
+created_at (datetime)
+updated_at (datetime)
+4. TimeEntryReports (join table for many-to-many between TimeEntries and Reports)
+
+id (primary key)
+time_entry_id (foreign key) (references time_entries)
+report_id (foreign key) (references reports)
+created_at (datetime)
+updated_at (datetime)
+5. TimePlans
+
+id (primary key)
+user_id (foreign key) (references users)
+time_period (datetime)
+time_plan_amount (integer)
+created_at (datetime)
+updated_at (datetime)
+6. TimeEntryPlans (join table for many-to-many between TimeEntries and TimePlans)
+
+id (primary key)
+time_entry_id (foreign key) (references time_entries)
+time_plan_id (foreign key) (references time_plans)
+created_at (datetime)
+updated_at (datetime)
+7. TimePlansReports (join table for many-to-many between TimePlans and Reports)
+
+id (primary key)
+time_plan_id (foreign key) (references time_plans)
+report_id (foreign key) (references reports)
+created_at (datetime)
+updated_at (datetime)
+Relationships
+A User has many TimeEntries
+A User has many TimePlans
+A TimeEntry belongs to a User
+A TimeEntry has many Reports through TimeEntryReports
+A TimePlan belongs to a User
+A TimePlan has many Reports through TimePlansReports
+A TimeEntry has many TimePlans through TimeEntryPlans
