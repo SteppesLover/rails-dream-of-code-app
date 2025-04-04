@@ -1,0 +1,68 @@
+1. What tables do you need to add? Decide on table names and their associations to each other and any existing tables/models.
+We need to add topics and lesson_topics_assignment tables
+
+2. What columns are necessary for the associations you decided on?
+topics table:
+id (Primary Key)
+name (String, unique to ensure no duplicate topics)
+
+id (Primary Key)
+lesson_id (Foreign Key referencing lessons)
+topic_id (Foreign Key referencing topics)
+
+
+3. What other columns (if any) need to be included on the tables? What other data needs to be stored?
+created_at (Timestamp)
+updated_at (Timestamp)
+
+created_at (Timestamp)
+updated_at (Timestamp)
+
+4. Write out each table s name and column names with data types.
+topics table:
+id (Primary Key)
+name (String)
+created_at (Timestamp)
+updated_at (Timestamp)
+lesson_topics_assignment table:
+id (Primary Key)
+lesson_id (Foreign Key referencing lessons)
+topic_id (Foreign Key referencing topics)
+created_at (Timestamp)
+updated_at (Timestamp)
+
+5. Determine the generator command you ll need to create the migration file and run the command to generate the empty migration file. Start with just the topics migration. (Hint: your filename should be create_topics)
+rails generate migration create topics 
+
+6. Inside the create_table block in the migration file, add the appropriate columns and datatypes.
+I added t.string :name inside migration file
+
+7. Run the migration with bin/rails db:migrate (in a terminal window, not a rails console). Watch the output and make sure it is successful before moving on. (You can check the database to see if your table exists.)
+== 20250404222321 CreateTopics: migrating =====================================
+-- create_table(:topics)
+   -> 0.0022s
+== 20250404222321 CreateTopics: migrated (0.0023s) ============================
+8. Add the Topic model before moving on.
+class Topic < ApplicationRecord
+    has_many :lesson_topic_assignment
+    has_many :lesson
+  end
+
+9. Now determine the generator command you ll need to create the migration file for the join table. Don t forget that it should begin with create_ and be followed by the table name.
+rails generate migration create_lesson_topics_assignment
+
+10. Inside the create_table block, add associations to topics and lessons with t.references :topic and t.references :lesson
+
+11. Run the migration.
+Migration
+== 20250404223013 CreateLessonTopicsAssignment: migrating =====================
+-- create_table(:lesson_topics_assignments)
+   -> 0.0018s
+== 20250404223013 CreateLessonTopicsAssignment: migrated (0.0019s) ============
+12. If the migration run was successful, create the model for your join table (be sure the name matches Rails conventions).
+class LessonTopicAssignment < ApplicationRecord
+    belongs_to :lesson
+    belongs_to :topic
+  end
+13. Open the console and test your new models by creating the topics above and adding them to some lessons.
+Topic.create!(name: "SQL")
