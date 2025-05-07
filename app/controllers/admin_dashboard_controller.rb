@@ -1,0 +1,11 @@
+class AdminDashboardController < ApplicationController
+  def index
+    @current_trimester = Trimester.where("start_date <= ?", Date.today).where("end_date >= ?", Date.today).first
+    @upcoming_trimester = Trimester
+    .where("start_date > ? AND start_date <= ?", Date.today, Date.today + 6.months)
+    .where("end_date >= ?", Date.today)
+    .order(:start_date)
+    .first
+    @students = Enrollment.where(course_id: @current_trimester.id).includes(:student).all
+  end
+end

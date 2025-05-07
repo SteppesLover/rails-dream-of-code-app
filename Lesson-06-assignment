@@ -1,3 +1,8 @@
+0. I added my master.key to gitingore file
+0. I added all semesters that I had in https://docs.google.com/spreadsheets/d/1rWBEN2jkXQPwG6c7juVJ_zKRodAMhuoYJFJJnqvbVzw/edit?gid=461867033#gid=461867033
+Because when I started to work my "Trimester" were nil
+
+1. I created "mentors_spec.rb" and filled it with code:
 
 require 'rails_helper'
 

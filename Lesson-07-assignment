@@ -1,0 +1,90 @@
+0. Created courses and coding classes because the are not in DB
+0. Find the problem that my Lesson-05-assignment called Lesson-04-assignment. Renamed it and Lesson-05-assignment to lesson-06-assignment
+
+1. Added to Routes:
+get '/dashboard/', to: 'admin_dashboard#index'
+get '/dashboard/:id', to: 'admin_dashboard#show'
+
+
+2. Created admin_dashboard in spec/request
+    require 'rails_helper'
+
+    describe 'GET /dashboard' do
+      before do
+        current_trimester = Trimester.create!(
+          term: 'Spring',
+          year: Date.today.year.to_s,
+          start_date: Date.today - 1.day,
+          end_date: Date.today + 2.months,
+          application_deadline: Date.today - 16.days
+        )
+        upcoming_trimester = Trimester.create!(
+          term: 'Summer',
+          year: Date.today.year.to_s,
+          start_date: Date.today + 2.month,
+          end_date: Date.today + 5.months,
+          application_deadline: Date.today + 50.days
+        )
+    
+      end
+        # Define past_trimester here and uncomment it when you're ready.
+        # past_trimester =
+        it 'displays the current trimester' do
+          get "/dashboard"
+          expect(response.body).to include("Spring")
+      end
+    
+      it 'displays the upcoming trimester' do
+        get "/dashboard"
+        expect(response.body).to include("Summer")
+    end
+    end
+    
+    RSpec.describe 'Courses', type: :request do
+      describe 'GET /courses/:id' do
+        it 'displays the student' do
+          get "/courses/5"
+    
+          expect(response.body).to include('Trevor')
+          expect(response.body).to include('Wiza')
+        end
+      end
+    end
+3. Created:
+class AdminDashboardController < ApplicationController
+    def index
+      @current_trimester = Trimester.where("start_date <= ?", Date.today).where("end_date >= ?", Date.today).first
+      @upcoming_trimester = Trimester
+      .where("start_date > ? AND start_date <= ?", Date.today, Date.today + 6.months)
+      .where("end_date >= ?", Date.today)
+      .order(:start_date)
+      .first
+      @students = Enrollment.where(course_id: @current_trimester.id).includes(:student).all
+    end
+  end
+
+4. Created:
+app/views/admin_dashboard/index.html.erb
+<h2><%= "#{@current_trimester.term} - #{@current_trimester.year}" %></h2>
+<ul>
+
+<% @current_trimester.courses.each do |course| %>
+  <li>
+    <%= link_to course_path(course) do %>
+      <%= course.coding_class.title %>
+      (<%= Enrollment.where(course_id: course.id).count %> students)
+    <% end %>
+  </li>
+<% end %>
+<h2><%= "#{@upcoming_trimester.term} - #{@upcoming_trimester.year}" %></h2>
+<ul>
+
+ <% @upcoming_trimester.courses.each do |course| %>
+  <li>
+    <%= link_to course_path(course) do %>
+      <%= course.coding_class.title %>
+      (<%= Enrollment.where(course_id: course.id).count %> students)
+    <% end %>
+  </li>
+<% end %>
+</ul>
