@@ -21,3 +21,10 @@
   </li>
 <% end %>
 </ul>
+
+<%= form_with url: "/dashboard", method: :post do |form| %>
+  <div class="my-5">
+    <%= form.label :student_name, "Student Name" %>
+    <%= form.select :student, Student.all.map { |s| ["#{s.first_name} #{s.last_name}", s.id] }, {}, class: "form-control" %>
+  </div>
+<% end %>
