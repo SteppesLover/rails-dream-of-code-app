@@ -1,0 +1,10 @@
+<p style="color: green"><%= notice %></p>
+
+<div>
+    <p><strong>Term:</strong> <%= @trimester.term %> <%= @trimester.year %></p>
+    <p><strong>Application deadline:</strong> <%= @trimester.application_deadline.strftime("%d %B, %Y")%></p>
+    <p><strong>Start date:</strong> <%= @trimester.start_date.strftime("%d %B, %Y")%></p>
+    <p><strong>End date:</strong> <%= @trimester.end_date.strftime("%d %B, %Y")%></p>
+</div>
+
+<%= link_to "Edit Trimester", edit_trimester_path(@trimester) %>

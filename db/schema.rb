@@ -75,8 +75,17 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_09_071543) do
   end
 
   create_table "submissions", force: :cascade do |t|
+    t.integer "enrollment_id"
+    t.integer "lesson_id"
+    t.integer "mentor_id"
+    t.string "pull_request_url"
+    t.string "review_result"
+    t.datetime "reviewed_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["enrollment_id"], name: "index_submissions_on_enrollment_id"
+    t.index ["lesson_id"], name: "index_submissions_on_lesson_id"
+    t.index ["mentor_id"], name: "index_submissions_on_mentor_id"
   end
 
   create_table "trimesters", force: :cascade do |t|

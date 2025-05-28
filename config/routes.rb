@@ -4,6 +4,7 @@ Rails.application.routes.draw do
   resources :enrollments
   resources :mentor_enrollment_assignments
   resources :lessons
+  resources :trimesters
   resources :courses do
     resources :submissions
   end
@@ -15,6 +16,7 @@ Rails.application.routes.draw do
   get "up" => "rails/health#show", as: :rails_health_check
   get "/trimesters", to: "trimesters#index"
   get "/trimesters/:id", to: "trimesters#show"
+  get "/trimesters/:id/edit", to: "trimesters#edit"
 
   get "/mentors/", to: "mentors#list"
   get "/mentors/", to: "mentors#show"

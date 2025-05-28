@@ -1,0 +1,125 @@
+1. In models trimester
+    
+"def trimester_name
+    "#{term} #{year}"
+  end"
+
+In courses_controller  
+# GET /courses/new
+  def new
+    @course = Course.new
+    @coding_classes = CodingClass.all
+    @trimesters = Trimester.all
+  end
+
+  # GET /courses/1/edit
+  def edit
+    @course = Course.find(params[:id])
+    @coding_classes = CodingClass.all
+    @trimesters = Trimester.all
+  end
+
+In view courses "form"
+<div class="form-group">
+    <%= form.label :coding_class, {}, { class: 'form-text' } %>
+    <%= form.select :coding_class_id, options_from_collection_for_select(@coding_classes, :id, :title), { prompt: 'Select Coding Class' }, { class: 'form-control' } %>
+  </div>
+
+  <div class="form-group">
+    <%= form.label :trimester, {}, { class: 'form-text' } %>
+    <%= form.select :trimester_id, options_from_collection_for_select(@trimesters, :id, :trimester_name), { prompt: 'Select trimester' }, { class: 'form-control' } %>
+  </div>
+
+  <div class="form-group">
+  <%= form.label :max_enrollment %>
+  <%= form.number_field :max_enrollment, class: 'form-control' %>
+</div>
+
+2.  In view Submissions "new"
+<div class="form-group">
+    <%= form.label :lesson, {}, { class: 'form-text' } %>
+    <%= form.select :lesson_id, options_from_collection_for_select(@lessons, :id, :title), { prompt: 'Select Lesson' }, { class: 'form-control' } %>
+  </div>
+
+  <div class="form-group">
+    <%= form.label :student, {}, { class: 'form-text' } %>
+    <%= form.select :enrollment_id, options_from_collection_for_select(@enrollments, :id, :student_full_name), { prompt: 'Select Student' }, { class: 'form-control' } %>
+  </div>
+
+  <div class="form-group">
+    <%= form.label :url, 'URL', class: 'form-text' %>
+    <%= form.text_field :url, class: 'form-control' %>
+  </div>
+
+    In submission controller:
+    def new
+    @course = Course.find(params[:course_id])
+    @submission = Submission.new
+    @enrollments = @course.enrollments.includes(:student)
+    @lessons = @course.lessons 
+  end
+
+    In Enrollments
+    "def student_full_name
+        student.full_name
+    end"
+3. 
+Added:
+Routes.rb
+resources :trimesters
+
+<div>
+  <%= link_to "Edit this trimester", edit_trimester_path(@trimester) %> |
+  <%= link_to "Back to trimesters", trimesters_path %>
+
+  <%= button_to "Destroy this trimester", @trimester, method: :delete %>
+</div>
+
+Added trimester show.html.erb:
+<p style="color: green"><%= notice %></p>
+
+<div>
+    <p><strong>Term:</strong> <%= @trimester.term %> <%= @trimester.year %></p>
+    <p><strong>Application deadline:</strong> <%= @trimester.application_deadline.strftime("%d %B, %Y")%></p>
+    <p><strong>Start date:</strong> <%= @trimester.start_date.strftime("%d %B, %Y")%></p>
+    <p><strong>End date:</strong> <%= @trimester.end_date.strftime("%d %B, %Y")%></p>
+</div>
+
+<%= link_to "Edit Trimester", edit_trimester_path(@trimester) %>
+
+Added edit.html.erb
+<h1>Editing Trimester</h1>
+
+<%= form_with model: @trimester, local: true do |form| %>
+  <% if @trimester.errors.any? %>
+    <div style="color: red">
+      <h2><%= pluralize(@trimester.errors.count, "error") %> prohibited this trimester from being saved:</h2>
+      <ul>
+        <% @trimester.errors.full_messages.each do |msg| %>
+          <li><%= msg %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div>
+    <%= form.label :application_deadline %><br>
+    <%= form.date_field :application_deadline %>
+  </div>
+
+  <div>
+    <%= form.label :start_date %><br>
+    <%= form.date_field :start_date %>
+  </div>
+
+  <div>
+    <%= form.label :end_date %><br>
+    <%= form.date_field :end_date %>
+  </div>
+
+  <div>
+    <%= form.submit "Update Trimester" %>
+  </div>
+<% end %>
+
+<%= link_to "Back", trimester_path(@trimester) %>

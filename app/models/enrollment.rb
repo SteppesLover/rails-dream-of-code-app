@@ -6,4 +6,9 @@ class Enrollment < ApplicationRecord
   def is_past_application_deadline
     created_at > course.application_deadline
   end
+
+  def student_full_name
+    student.full_name
+  end
+
 end
