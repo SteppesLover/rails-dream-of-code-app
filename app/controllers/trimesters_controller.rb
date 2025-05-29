@@ -10,16 +10,31 @@ class TrimestersController < ApplicationController
 
   # GET /trimester/1/edit
   def edit
-    @trimester = Trimester.find(params[:id])
-  end
-  def update
-    @trimester = Trimester.find(params[:id])
-    if @trimester.update(trimester_params)
-      redirect_to @trimester, notice: "Trimester updated successfully."
-    else
-      render :edit, status: :unprocessable_entity
+    @trimester = Trimester.find_by(id: params[:id])
+    if @trimester.nil?
+      flash[:alert] = "Trimester not found"
+      redirect_to trimesters_path
     end
   end
+
+def update
+  @trimester = Trimester.find_by(id: params[:id])
+
+  if @trimester.nil?
+    redirect_to trimesters_path, alert: "Trimester not found"
+    return
+  end
+
+  respond_to do |format|
+    if @trimester.update(trimester_params)
+      format.html { redirect_to @trimester, notice: "Trimester was successfully updated." }
+      format.json { render :show, status: :ok, location: @trimester }
+    else
+      format.html { render :edit, status: :unprocessable_entity }
+      format.json { render json: @trimester.errors, status: :unprocessable_entity }
+    end
+  end
+end
 
   private
 

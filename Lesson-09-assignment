@@ -1,3 +1,4 @@
+
 1. In models trimester
     
 "def trimester_name
@@ -123,3 +124,112 @@ Added edit.html.erb
 <% end %>
 
 <%= link_to "Back", trimester_path(@trimester) %>
+
+Added spec/view/trimesters/edit.html.erb_spec.rb
+require 'rails_helper'
+
+RSpec.describe "trimesters/edit.html.erb", type: :view do
+  before do
+    assign(:trimester, Trimester.new(id: 1, application_deadline: Date.today))
+  end
+
+  it "displays the application_deadline field" do
+    render
+    expect(rendered).to include("application_deadline")
+  end
+end
+Added trimester.controller.rb
+  def edit
+    @trimester = Trimester.find_by(id: params[:id])
+    if @trimester.nil?
+      flash[:alert] = "Trimester not found"
+      redirect_to trimesters_path
+    end
+  end
+
+def update
+  @trimester = Trimester.find_by(id: params[:id])
+
+  if @trimester.nil?
+    redirect_to trimesters_path, alert: "Trimester not found"
+    return
+  end
+
+  respond_to do |format|
+    if @trimester.update(trimester_params)
+      format.html { redirect_to @trimester, notice: "Trimester was successfully updated." }
+      format.json { render :show, status: :ok, location: @trimester }
+    else
+      format.html { render :edit, status: :unprocessable_entity }
+      format.json { render json: @trimester.errors, status: :unprocessable_entity }
+    end
+  end
+end
+
+
+Added in Index.html.erb
+<% if flash[:alert] %>
+<p style="color: red"><%= flash[:alert] %></p>
+<% end %>
+
+Created trimesters_spec.rb
+require 'rails_helper'
+
+RSpec.describe "Trimesters", type: :request do
+  describe "PUT /trimesters/:id" do
+    let!(:trimester) do
+      Trimester.create!(
+        term: "Spring",
+        year: "2025",
+        start_date: Date.today,
+        end_date: Date.today + 3.months,
+        application_deadline: Date.today + 1.month
+      )
+    end
+
+    context "when application deadline is valid" do
+      it "updates the application deadline and returns status 200" do
+        new_deadline = (Date.today + 2.months).to_s
+
+        put "/trimesters/#{trimester.id}", params: {
+          trimester: { application_deadline: new_deadline }
+        }
+
+        expect(response).to have_http_status(:found)
+        expect(trimester.reload.application_deadline.to_s).to eq(new_deadline)
+      end
+    end
+
+    context "when application deadline is missing" do
+      it "returns status 422 (unprocessable_entity)" do
+        put "/trimesters/#{trimester.id}", params: {
+          trimester: { application_deadline: nil }
+        }
+
+        expect(response).to have_http_status(:unprocessable_entity)
+      end
+    end
+
+    context "when application deadline has invalid format" do
+      it "returns status 422 (unprocessable_entity)" do
+        put "/trimesters/#{trimester.id}", params: {
+          trimester: { application_deadline: "invalid-date" }
+        }
+
+        expect(response).to have_http_status(:unprocessable_entity)
+      end
+    end
+
+    context "when trimester ID does not exist" do
+      it "returns status 302 and redirects to index" do
+        put "/trimesters/999999", params: {
+          trimester: { application_deadline: Date.today.to_s }
+        }
+
+        expect(response).to redirect_to(trimesters_path)
+        follow_redirect!
+        expect(response.body).to include("Trimester not found")
+      end
+    end
+  end
+end
