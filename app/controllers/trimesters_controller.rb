@@ -1,4 +1,5 @@
 class TrimestersController < ApplicationController
+  before_action :require_admin, only: [:create, :update, :destroy]
     def index
       @trimesters = Trimester.all
     end
@@ -34,6 +35,11 @@ def update
       format.json { render json: @trimester.errors, status: :unprocessable_entity }
     end
   end
+end
+def require_admin
+  if current_user&.role != 'admin'
+  flash[:alert] = 'You do not have access to that page'
+  redirect_to root_path
 end
 
   private

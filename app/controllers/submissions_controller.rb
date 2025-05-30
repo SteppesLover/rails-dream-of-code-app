@@ -1,4 +1,6 @@
 class SubmissionsController < ApplicationController
+  before_action :require_student, only: [:create]
+  before_action :require_mentor, only: [:edit, :update]
   # GET /submissions/new
   def new
     @course = Course.find(params[:course_id])
@@ -28,9 +30,22 @@ class SubmissionsController < ApplicationController
   def update
   end
 
+  def require_student
+    if current_user&.role != 'student'
+    flash[:alert] = 'You do not have access to that page'
+    redirect_to root_path
+    end
+  end
+  def require_mentor
+    if current_user&.role != 'mentor'
+    flash[:alert] = 'You do not have access to that page'
+    redirect_to root_path
+  end
+
   private
     # Only allow a list of trusted parameters through.
     def submission_params
       params.require(:submission).permit(:lesson_id, :enrollment_id, :mentor_id, :review_result, :reviewed_at)
     end
+  end
 end
