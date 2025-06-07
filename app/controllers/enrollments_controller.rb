@@ -1,6 +1,5 @@
 class EnrollmentsController < ApplicationController
   before_action :set_enrollment, only: %i[ show edit update destroy ]
-  before_action :require_admin, only: [:show]
 
   # GET /enrollments or /enrollments.json
   def index
@@ -56,12 +55,6 @@ class EnrollmentsController < ApplicationController
       format.html { redirect_to enrollments_path, status: :see_other, notice: "Enrollment was successfully destroyed." }
       format.json { head :no_content }
     end
-  end
-
-  def require_admin
-  if current_user&.role != 'admin'
-    flash[:alert] = 'You do not have access to that page'
-    redirect_to root_path
   end
 
   private
