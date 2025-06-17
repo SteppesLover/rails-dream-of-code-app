@@ -1,6 +1,6 @@
 class CoursesController < ApplicationController
   before_action :set_course, only: %i[ show edit update destroy ]
-
+  before_action :require_admin, only: [:create, :update, :destroy]
   # GET /courses or /courses.json
   def index
     @courses = Course.all
@@ -63,6 +63,12 @@ class CoursesController < ApplicationController
       format.html { redirect_to courses_path, status: :see_other, notice: "Course was successfully destroyed." }
       format.json { head :no_content }
     end
+  end
+  
+  def require_admin
+    if current_user&.role != 'admin'
+      flash[:alert] = 'You do not have access to that page'
+      redirect_to root_path
   end
 
   private

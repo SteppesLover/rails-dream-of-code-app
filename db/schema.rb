@@ -97,6 +97,14 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_29_231835) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
+  create_table "users", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "username", null: false
+    t.string "password_digest", null: false
+    t.string "role", null: false
+    t.index ["username"], name: "index_users_on_username", unique: true
+  end
 
   add_foreign_key "courses", "coding_classes"
   add_foreign_key "courses", "trimesters"

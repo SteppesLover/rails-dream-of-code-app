@@ -1,5 +1,6 @@
 class EnrollmentsController < ApplicationController
   before_action :set_enrollment, only: %i[ show edit update destroy ]
+  before_action :require_admin, only: [:show]
 
   # GET /enrollments or /enrollments.json
   def index
@@ -57,6 +58,12 @@ class EnrollmentsController < ApplicationController
     end
   end
 
+  def require_admin
+  if current_user&.role != 'admin'
+    flash[:alert] = 'You do not have access to that page'
+    redirect_to root_path
+  end
+  
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_enrollment
